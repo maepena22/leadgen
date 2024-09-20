@@ -1,34 +1,17 @@
-from WebScrapper.scrapper import Scrappers 
+import sys
+from WebScrapper.scrapper import Scrappers
 from Configs.selenium_config import driver
 
-
-
-def main():
-    print("\n<=== MENU ===>\n1 - EXTRACT DATASET\n2 - SHOW DATASET\n3 - TRANSFER DATASET TO SHEET\n4 - GENERATE AND SEND PERSONALIZED EMAILS\n5 - PRODUCTION MODE (It'll do All 4 steps)\n0 - Exit the script \n<=== END ===>\n")
+def main(business_name, location):
+    print("\n<== EXTRACTION STARTED ==>\n")
     scrapper = Scrappers()
-    mode = 1
+    
+    scrapper.scrape(business_name, location)
+    
+    print("\n<== EXTRACTION COMPLETED ==>\n")
+    driver.close()
 
-    try:
-        if mode == 0:
-            print("\n<== Terminated ==>\n")
-            driver.close()
-        elif mode == 1:
-            print("\n<== EXTRACTION STARTED ==>\n")
-
-            # business_name = input("Enter the Business Name: ")
-            business_name = 'ドローン免許取得'
-            location = input("Enter the Location: ")
-            scrapper.scrape(business_name, location)
-            
-            print("\n<== EXTRACTED COMPLETED ==>\n")
-            main()
-        
-        else:
-            print("<== DEVELOPMENT MODE - STARTED ==>")
-            
-            print("<== DEVELOPMENT MODE - FINISHED ==>")
-            main()
-    except Exception as error:
-        print(error)
-
-main()
+if __name__ == "__main__":
+    business_name = sys.argv[1]  # Get business name from command line
+    location = sys.argv[2]  # Get location from command line
+    main(business_name, location)

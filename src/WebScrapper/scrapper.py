@@ -8,6 +8,8 @@ from Configs.selenium_config import driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from urllib.parse import urljoin
+import csv
+import os  # Make sure to import the os module
 
 class Scrappers:
     def scrape(self, industry_name, location):
@@ -40,7 +42,7 @@ class Scrappers:
 
             print("\n[LOG] - EXTRACTING DATA \n")
             for link in links:
-                if count == 200:
+                if count == 5:
                     break
                 driver.get(link)
                 print(f"\n[LOG] -  VISITING : {link[0:25]}... \n")
@@ -59,9 +61,33 @@ class Scrappers:
                 count += 1
 
             print("\n[LOG] - DATASET LOADED\n")
-            with open('business_data.json', 'w', encoding='utf-8') as f:
-                json.dump(result, f, ensure_ascii=False, indent=4)
+            # with open('business_data.json', 'w', encoding='utf-8') as f:
+            #     json.dump(result, f, ensure_ascii=False, indent=4)
+            
+            csv_file_path = f"{industry_name}.csv"
 
+            # Ensure the file doesn't exist yet and is being created
+            if not os.path.exists(csv_file_path):
+                print(f"File '{csv_file_path}' does not exist, creating it now...")
+
+            # Get the keys (headers) from the first dictionary in the result
+            keys = result[0].keys()
+
+            # Write the data to the CSV file
+            try:
+                with open(csv_file_path, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.DictWriter(f, fieldnames=keys)
+                    
+                    # Write the header (column names)
+                    writer.writeheader()
+                    
+                    # Write the rows of data
+                    writer.writerows(result)
+                
+                print(f"Data has been successfully written to '{csv_file_path}'")
+                
+            except Exception as e:
+                print(f"An error occurred: {e}")
             print("\n[LOG] - EXTRACTION COMPLETED\n")
         except Exception as e:
             print(f"[ERROR] - An error occurred: {e}")
